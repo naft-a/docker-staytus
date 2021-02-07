@@ -1,0 +1,35 @@
+version: '3'
+services:
+  db:
+    image: 'mariadb:latest'
+    volumes:
+      - mariadbdata:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=$DB_NAME
+      - MYSQL_USER=$DB_USER
+      - MYSQL_PASSWORD=$DB_PASSWORD
+      - MYSQL_ROOT_PASSWORD=password
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - ./content:/opt/rails/staytus/content
+    environment:
+      - CLEAN_INSTALL=$CLEAN_INSTALL
+      - DB_HOST=db
+      - DB_ADAPTER=mysql2
+      - DB_POOL=5
+      - DB_DATABASE=$DB_NAME
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - STAYTUS_SMTP_HOSTNAME=$SMTP_HOSTNAME
+      - STAYTUS_SMTP_PORT=$SMTP_PORT
+      - STAYTUS_SMTP_USERNAME=$SMTP_USERNAME
+      - STAYTUS_SMTP_PASSWORD=$SMTP_PASSWORD
+    ports:
+      - "3000:8787"
+    depends_on:
+      - db
+volumes:
+  mariadbdata:
