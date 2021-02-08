@@ -12,16 +12,16 @@ nano .env
 
 `.env` is the app's config file so we need to make some changes in there before running any containers:
 
-1. Uncomment the `CLEAN_INSTALL=1` this will apply the db schema to the newly created mariadb database.
+1. Uncomment the `CLEAN_INSTALL=1` variable to apply the staytus db schema to the newly created mariadb database
 
 ```
-## WARNING! THIS COMMAND WILL ERASE ALL DATA
+## WARNING! THIS VARIABLE WILL ERASE ALL DATA
 ## USE FOR NEW STAYTUS INSTALLATIONS ONLY
 # CLEAN_INSTALL=1
 #############################################
 ```
 
-2. Populate all other variables inside.
+2. Populate all other variables inside
 
 ```
 ## Database config ##
@@ -36,7 +36,7 @@ SMTP_USERNAME=
 SMTP_PASSWORD=
 ```
 
-3. Run docker compose:
+3. Run docker compose
 
 ```
 docker-compose up
@@ -46,40 +46,34 @@ That's it! Docker will now pull, build and run the required containers, by defau
 
 ## !!! IMPORTANT !!!
 
-Make sure you comment out the `CLEAN_INSTALL=1` environment variable in the `.env` file before running new containers to avoid data loss.
+Make sure you comment out the `CLEAN_INSTALL=1` environment variable in the `.env` file before restarting/running a container, otherwise it will erase data in an already installed staytus application.
 
 ---
 
 ## Alternative installation (without docker compose)
 
-1. Run mariadb container with a volume, change `<user>` with the real user:
+1. Run mariadb container with a volume, change `<user>` with the desired user:
 
 ```
-docker run --name mariadb -v /home/<username>/db_data/:/var/lib/mysql -e MYSQL_USER=staytus -e MYSQL_PASSWORD=staytus -e MYSQL_DATABASE=staytus -e MYSQL_ROOT_PASSWORD=password -d mariadb:latest
+docker run --name mariadb -v /home/<user>/db_data/:/var/lib/mysql -e MYSQL_USER=staytus -e MYSQL_PASSWORD=staytus -e MYSQL_DATABASE=staytus -e MYSQL_ROOT_PASSWORD=password -d mariadb:latest
 ```
 
-2. Build & run staytus container
+2. Run staytus container
 ```
-cd docker-staytus/
-
-# Build the image
-docker build -t myapp/staytus:latest .
-
-# Run a container
-docker run -it --link mariadb:db -p 3000:8787 -e DB_ADAPTER=mysql2 -e DB_HOST=db -e DB_POOL=5 -e DB_USER=staytus -e DB_PASSWORD=staytus -e DB_DATABASE=staytus myapp/staytus:latest
+docker run -it --link mariadb:db -p 3000:8787 -e CLEAN_INSTALL=1 -e DB_ADAPTER=mysql2 -e DB_HOST=db -e DB_POOL=5 -e DB_USER=staytus -e DB_PASSWORD=staytus -e DB_DATABASE=staytus georgiganchev/staytus:latest
 ```
 
 ## Other features
 
-This project supports themes when built with docker compose. The default theme is located in `content/themes/default/`, if you wish to add your custom styles or scripts, simply make the changes and rebuild the container
+This project supports themes when built with docker compose. The default theme is located in `content/themes/default/`, if you wish to add your custom styles or scripts, simply make the changes and re-run the container
 
 It also supports Internationalization (I18n) 
 
-In `content/locales/`, add file with a locale identifier:
+In `content/locales/`, add a new file with a locale identifier:
 ```
 touch bg.yml
 ```
-Add all locale definitions and use the localized string in the views:
+Add all locale definitions and use the localized string in the .erb views:
 
 ```
 <%= t('themes.default.hello', locale: :bg) %>
