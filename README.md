@@ -58,9 +58,16 @@ Make sure you comment out the `CLEAN_INSTALL=1` environment variable in the `.en
 docker run --name mariadb -v /home/<user>/db_data/:/var/lib/mysql -e MYSQL_USER=staytus -e MYSQL_PASSWORD=staytus -e MYSQL_DATABASE=staytus -e MYSQL_ROOT_PASSWORD=password -d mariadb:latest
 ```
 
-2. Run staytus container
+2. Build & run staytus container
+
 ```
-docker run -it --link mariadb:db -p 3000:8787 -e CLEAN_INSTALL=1 -e DB_ADAPTER=mysql2 -e DB_HOST=db -e DB_POOL=5 -e DB_USER=staytus -e DB_PASSWORD=staytus -e DB_DATABASE=staytus georgiganchev/staytus:latest
+cd docker-staytus/
+
+# Build the image
+docker build -t username/staytus:latest .
+
+# Run a container
+docker run -it --link mariadb:db -p 3000:8787 -e CLEAN_INSTALL=1 -e DB_ADAPTER=mysql2 -e DB_HOST=db -e DB_POOL=5 -e DB_USER=staytus -e DB_PASSWORD=staytus -e DB_DATABASE=staytus username/staytus:latest
 ```
 
 ## Other features
